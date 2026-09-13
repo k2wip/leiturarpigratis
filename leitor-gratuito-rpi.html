@@ -1,0 +1,1753 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leitor Gratuito de RPI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --navy: #10283f;
+        --navy-2: #173a58;
+        --blue: #2f607f;
+        --gold: #b99752;
+        --gold-soft: #f1e9d7;
+        --paper: #f7f8f9;
+        --white: #ffffff;
+        --text: #1d2933;
+        --muted: #5d6973;
+        --line: #dce2e7;
+        --success: #246247;
+        --error: #a13d35;
+        --shadow: 0 12px 35px rgba(16, 40, 63, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+        margin: 0;
+        padding: 0;
+        background: var(--paper);
+        color: var(--text);
+        font-family: "IBM Plex Sans", Arial, sans-serif;
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+    body {
+        min-height: 100vh;
+    }
+
+    .topbar {
+        background: var(--navy);
+        color: #fff;
+        padding: 18px 24px;
+    }
+
+    .topbar-inner {
+        max-width: 920px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    .brand {
+        font-family: "Fraunces", Georgia, serif;
+        font-size: 20px;
+        letter-spacing: .2px;
+        font-weight: 500;
+    }
+
+    .brand span {
+        color: #d8bd7c;
+    }
+
+    .topbar-label {
+        font-size: 12px;
+        color: #cbd6df;
+        letter-spacing: .5px;
+        text-transform: uppercase;
+    }
+
+    .hero {
+        background: linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 100%);
+        color: #fff;
+        padding: 54px 24px 58px;
+        text-align: center;
+    }
+
+    .hero-inner {
+        max-width: 720px;
+        margin: 0 auto;
+    }
+
+    .hero-kicker {
+        display: inline-block;
+        border: 1px solid rgba(216, 189, 124, .55);
+        color: #ead9ad;
+        border-radius: 999px;
+        padding: 5px 12px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: .7px;
+        text-transform: uppercase;
+        margin-bottom: 17px;
+    }
+
+    .hero h1 {
+        font-family: "Fraunces", Georgia, serif;
+        font-weight: 500;
+        font-size: clamp(32px, 5vw, 44px);
+        line-height: 1.15;
+        letter-spacing: -.4px;
+        margin: 0 0 14px;
+    }
+
+    .hero p {
+        max-width: 590px;
+        margin: 0 auto;
+        color: #dbe4eb;
+        font-size: 16px;
+    }
+
+    main {
+        max-width: 820px;
+        margin: -28px auto 0;
+        padding: 0 20px 60px;
+        position: relative;
+    }
+
+    .card {
+        background: var(--white);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        padding: 28px;
+        margin-bottom: 18px;
+    }
+
+    .card + .card {
+        margin-top: 18px;
+    }
+
+    h2 {
+        font-family: "Fraunces", Georgia, serif;
+        font-weight: 500;
+        font-size: 22px;
+        line-height: 1.25;
+        margin: 0 0 12px;
+        color: var(--navy);
+    }
+
+    h3 {
+        font-size: 15px;
+        margin: 0 0 5px;
+        color: var(--navy);
+    }
+
+    p {
+        margin: 0 0 13px;
+    }
+
+    p:last-child {
+        margin-bottom: 0;
+    }
+
+    .intro p,
+    .nota {
+        color: var(--muted);
+    }
+
+    .intro strong {
+        color: var(--navy);
+    }
+
+    a {
+        color: var(--blue);
+        font-weight: 600;
+        text-decoration-color: var(--gold);
+        text-underline-offset: 3px;
+    }
+
+    a:hover {
+        color: var(--navy);
+    }
+
+    .highlight {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-top: 22px;
+    }
+
+    .highlight-item {
+        background: #f5f7f9;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        padding: 14px;
+    }
+
+    .highlight-icon {
+        color: var(--gold);
+        font-size: 18px;
+        margin-bottom: 3px;
+    }
+
+    .highlight-item strong {
+        display: block;
+        color: var(--navy);
+        font-size: 13px;
+        margin-bottom: 2px;
+    }
+
+    .highlight-item span {
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.45;
+    }
+
+    .modelo-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        margin: 4px 0 14px;
+        padding: 9px 13px;
+        background: var(--gold-soft);
+        border: 1px solid #e5d8bb;
+        border-radius: 7px;
+        font-size: 13px;
+        text-decoration: none;
+    }
+
+    .tabela-colunas {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin: 17px 0;
+        font-size: 13px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+    }
+
+    .tabela-colunas th,
+    .tabela-colunas td {
+        border-bottom: 1px solid var(--line);
+        border-right: 1px solid var(--line);
+        padding: 9px 10px;
+        text-align: left;
+        vertical-align: top;
+    }
+
+    .tabela-colunas th:last-child,
+    .tabela-colunas td:last-child {
+        border-right: 0;
+    }
+
+    .tabela-colunas tr:last-child td {
+        border-bottom: 0;
+    }
+
+    .tabela-colunas th {
+        background: #eef2f5;
+        color: var(--navy);
+        font-weight: 600;
+        font-size: 12px;
+    }
+
+    .tabela-colunas td:first-child,
+    code {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 12px;
+    }
+
+    code {
+        background: #f1f3f5;
+        border: 1px solid #e1e5e8;
+        border-radius: 4px;
+        padding: 1px 4px;
+        color: var(--navy);
+    }
+
+    .nota {
+        font-size: 13px;
+    }
+
+    .privacy {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        background: var(--gold-soft);
+        border: 1px solid #e5d8bb;
+        border-radius: 10px;
+        padding: 17px 18px;
+    }
+
+    .privacy-mark {
+        flex: 0 0 auto;
+        width: 30px;
+        height: 30px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--navy);
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .privacy strong {
+        display: block;
+        color: var(--navy);
+        font-size: 14px;
+        margin-bottom: 2px;
+    }
+
+    .privacy p {
+        color: var(--muted);
+        font-size: 13px;
+        margin: 0;
+    }
+
+    .process-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        margin-bottom: 18px;
+    }
+
+    .process-badge {
+        color: var(--blue);
+        background: #edf4f8;
+        border: 1px solid #d6e4ec;
+        border-radius: 999px;
+        padding: 4px 9px;
+        font-size: 11px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    label.rotulo {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--navy);
+        margin-bottom: 7px;
+    }
+
+    .edicao-opcoes {
+        display: grid;
+        gap: 9px;
+        margin-bottom: 14px;
+    }
+
+    .edicao-opcao {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 11px 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fafbfc;
+        cursor: pointer;
+        font-size: 13px;
+        color: var(--text);
+    }
+
+    .edicao-opcao:hover {
+        border-color: #bfcbd4;
+        background: #f5f7f9;
+    }
+
+    .edicao-opcao input {
+        margin: 0;
+        accent-color: var(--navy);
+    }
+
+    .edicao-anterior {
+        display: none;
+        margin: 10px 0 14px;
+    }
+
+    .edicao-anterior label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--navy);
+        margin-bottom: 7px;
+    }
+
+    .edicao-contador {
+        display: flex;
+        align-items: stretch;
+        width: 100%;
+    }
+
+    .edicao-contador input {
+        flex: 1;
+        min-width: 0;
+        padding: 11px 12px;
+        border: 1px solid #bfcbd4;
+        border-right: 0;
+        border-radius: 8px 0 0 8px;
+        background: #fff;
+        color: var(--text);
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 13px;
+        text-align: center;
+        font-weight: 500;
+        outline: none;
+    }
+
+    .edicao-setas {
+        display: flex;
+        flex-direction: column;
+        width: 42px;
+    }
+
+    .edicao-seta {
+        width: 100%;
+        flex: 1;
+        padding: 0;
+        border: 1px solid #bfcbd4;
+        border-radius: 0;
+        background: #f5f7f9;
+        color: var(--navy);
+        font-size: 13px;
+        line-height: 1;
+        cursor: pointer;
+    }
+
+    .edicao-seta:first-child {
+        border-radius: 0 8px 0 0;
+        border-bottom: 0;
+    }
+
+    .edicao-seta:last-child {
+        border-radius: 0 0 8px 0;
+    }
+
+    .edicao-seta:hover:not(:disabled) {
+        background: #e9eef2;
+        transform: none;
+    }
+
+    .edicao-seta:disabled {
+        opacity: .4;
+        cursor: not-allowed;
+    }
+
+    .edicao-contador:focus-within input,
+    .edicao-contador:focus-within .edicao-seta {
+        border-color: var(--blue);
+    }
+
+    .edicao-nota {
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.45;
+    }
+
+    input[type="file"] {
+        width: 100%;
+        padding: 11px;
+        border: 1px dashed #bfcbd4;
+        border-radius: 8px;
+        margin-bottom: 14px;
+        font-size: 13px;
+        background: #fafbfc;
+        font-family: "IBM Plex Sans", Arial, sans-serif;
+        color: var(--muted);
+    }
+
+    input[type="file"]:focus {
+        outline: 2px solid rgba(47, 96, 127, .18);
+        outline-offset: 2px;
+    }
+
+    button {
+        width: 100%;
+        padding: 13px 16px;
+        font-size: 13.5px;
+        font-weight: 600;
+        letter-spacing: .3px;
+        border: 0;
+        border-radius: 7px;
+        cursor: pointer;
+        background: var(--navy);
+        color: #fff;
+        transition: background .15s, transform .15s;
+    }
+
+    button:hover:not(:disabled) {
+        background: var(--navy-2);
+        transform: translateY(-1px);
+    }
+
+    button:disabled {
+        opacity: .5;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    #status {
+        margin-top: 17px;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 11.5px;
+        color: #52606b;
+        white-space: pre-wrap;
+        max-height: 220px;
+        overflow-y: auto;
+        background: #f7f9fa;
+        border: 1px solid var(--line);
+        border-left: 3px solid var(--blue);
+        border-radius: 6px;
+        padding: 11px 12px;
+        display: none;
+    }
+
+    #mensagem-final {
+        margin-top: 14px;
+        font-size: 13.5px;
+        font-weight: 600;
+        display: none;
+    }
+
+    #mensagem-final.sucesso { color: var(--success); }
+    #mensagem-final.erro { color: var(--error); }
+
+    #botao-download {
+        margin-top: 11px;
+        display: none;
+        background: var(--gold);
+        color: #fff;
+    }
+
+    #botao-download:hover {
+        background: #9e7e3f;
+    }
+
+    .help {
+        margin-top: 14px;
+        text-align: center;
+        color: var(--muted);
+        font-size: 12px;
+    }
+
+    footer {
+        text-align: center;
+        font-size: 12px;
+        color: #7a858e;
+        padding: 4px 24px 35px;
+    }
+
+    footer strong {
+        color: var(--navy);
+    }
+
+    @media (max-width: 680px) {
+        .topbar-inner {
+            justify-content: center;
+        }
+
+        .topbar-label {
+            display: none;
+        }
+
+        .hero {
+            padding: 42px 20px 50px;
+        }
+
+        main {
+            padding: 0 14px 45px;
+        }
+
+        .card {
+            padding: 21px 17px;
+            border-radius: 10px;
+        }
+
+        .highlight {
+            grid-template-columns: 1fr;
+        }
+
+        .tabela-colunas {
+            display: block;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .process-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
+</style>
+
+</head>
+<body>
+
+<div class="topbar">
+    <div class="topbar-inner">
+        <div class="brand">K2W <span>IP</span></div>
+        <div class="topbar-label">Ferramenta gratuita</div>
+    </div>
+</div>
+
+<div class="hero">
+    <div class="hero-inner">
+        <div class="hero-kicker">Propriedade Intelectual</div>
+        <h1>Leitor Gratuito de RPI</h1>
+        <p>Consulte a RPI mais recente ou escolha uma edição anterior para identificar publicações relacionadas à sua carteira de processos.</p>
+    </div>
+</div>
+
+<main>
+
+    <section class="card intro">
+        <h2>Uma ferramenta simples para começar</h2>
+        <p>
+            Este é um projeto gratuito para <strong>advogados, profissionais de propriedade intelectual,
+            agentes e pequenos escritórios</strong> que estão começando nessa área e ainda não precisam
+            ou não podem investir em um software de monitoramento pago.
+        </p>
+        <p>
+            A ferramenta lê a <strong>RPI (Revista da Propriedade Industrial)</strong> que você escolher,
+            publicada semanalmente pelo INPI, e cruza as publicações com a sua carteira de
+            <strong>marcas, patentes e desenhos industriais</strong>.
+        </p>
+
+        <div class="highlight">
+            <div class="highlight-item">
+                <div class="highlight-icon">01</div>
+                <strong>Gratuito</strong>
+                <span>Feito para quem está começando.</span>
+            </div>
+            <div class="highlight-item">
+                <div class="highlight-icon">02</div>
+                <strong>Processamento local</strong>
+                <span>Sua carteira permanece no seu computador.</span>
+            </div>
+            <div class="highlight-item">
+                <div class="highlight-icon">03</div>
+                <strong>Resultado em Excel</strong>
+                <span>Baixe a planilha com as ocorrências encontradas.</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="card">
+        <h2>Prepare sua planilha</h2>
+        <p class="nota">
+            A maneira mais fácil é usar o modelo abaixo. No Google Sheets, abra o modelo,
+            escolha <em>Arquivo → Fazer uma cópia</em> e depois baixe o arquivo como
+            <code>.xlsx</code> em <em>Arquivo → Fazer download → Microsoft Excel</em>.
+        </p>
+
+        <a class="modelo-link"
+           href="https://docs.google.com/spreadsheets/d/1P__MQuYQtg9ZvoXnrx3b13jVE1_dO6c4fq8YhdgqmZw/edit?gid=0#gid=0"
+           target="_blank" rel="noopener">
+            Abrir modelo de planilha →
+        </a>
+
+        <p class="nota">
+            Se preferir criar a planilha do zero, ela deve ter uma aba chamada
+            <code>Carteira</code> e estas colunas:
+        </p>
+
+        <table class="tabela-colunas">
+            <thead>
+                <tr>
+                    <th>Número do Processo</th>
+                    <th>Tipo</th>
+                    <th>Nome</th>
+                    <th>Titular ou Referência</th>
+                    <th>Observações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>000000000</td>
+                    <td>Marca</td>
+                    <td>NOME DA MARCA</td>
+                    <td>Titular do processo</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>BR 00 0000 000000-0</td>
+                    <td>Patente</td>
+                    <td>Título da patente</td>
+                    <td>Titular do processo</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p class="nota">
+            O único campo efetivamente utilizado para localizar a publicação é
+            <strong>Número do Processo</strong>. As demais colunas também devem existir,
+            mas podem ficar em branco. Recomendamos preencher <strong>Nome</strong> para
+            facilitar a identificação do processo no resultado. Em <strong>Tipo</strong>,
+            utilize <code>Marca</code>, <code>Patente</code> ou <code>Desenho Industrial</code>.
+        </p>
+    </section>
+
+    <section class="card">
+        <div class="privacy">
+            <div class="privacy-mark">✓</div>
+            <div>
+                <strong>Sua carteira não é enviada para nossos servidores</strong>
+                <p>
+                    O arquivo escolhido é processado localmente no seu navegador e não é
+                    armazenado por nós. O sistema consulta apenas os dados públicos da RPI
+                    necessários para realizar a leitura.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="card">
+        <div class="process-header">
+            <h2>Processar RPI</h2>
+            <span class="process-badge">Sem cadastro</span>
+        </div>
+
+        <label class="rotulo">1. Escolha a edição da RPI</label>
+
+        <div class="edicao-opcoes">
+            <label class="edicao-opcao">
+                <input type="radio" name="tipo-edicao" value="recente" checked>
+                <span>RPI mais recente disponível</span>
+            </label>
+
+            <label class="edicao-opcao">
+                <input type="radio" name="tipo-edicao" value="anterior">
+                <span>Escolher uma edição anterior</span>
+            </label>
+        </div>
+
+        <div class="edicao-anterior" id="edicao-anterior">
+            <label for="numero-rpi">Número da RPI</label>
+            <div class="edicao-contador">
+                <input type="number" id="numero-rpi" value="Carregando..." min="1" step="1" inputmode="numeric" aria-label="Número da RPI selecionada">
+                <div class="edicao-setas">
+                    <button type="button" class="edicao-seta" id="rpi-subir" aria-label="RPI mais recente">▲</button>
+                    <button type="button" class="edicao-seta" id="rpi-descer" aria-label="RPI anterior">▼</button>
+                </div>
+            </div>
+            <div class="edicao-nota" id="edicao-nota">
+                A edição anterior à mais recente será selecionada inicialmente. Use as setas ou digite o número da RPI que deseja consultar.
+            </div>
+        </div>
+
+        <label class="rotulo" for="arquivo-carteira">2. Selecione sua planilha (.xlsx)</label>
+        <input type="file" id="arquivo-carteira" accept=".xlsx">
+
+        <button id="botao-processar" disabled>Carregando o ambiente…</button>
+
+        <div id="status"></div>
+
+        <div id="mensagem-final"></div>
+
+        <button id="botao-download">Baixar planilha de resultados</button>
+
+        <div class="help">
+            O processamento pode levar alguns minutos, especialmente na primeira utilização. A edição escolhida é consultada diretamente no momento do processamento.
+        </div>
+    </section>
+
+</main>
+
+<footer>
+    <strong>K2W IP</strong> · Leitor Gratuito de RPI · processamento local, sem custo.
+</footer>
+
+<!--
+    O motor de leitura da RPI fica embutido aqui embaixo, como texto puro
+    (o navegador não executa isso — só é lido pelo Pyodide). Assim o
+    arquivo funciona sozinho, sem precisar buscar um segundo arquivo.
+-->
+<script type="text/python" id="motor-rpi-fonte">
+# -*- coding: utf-8 -*-
+"""
+Motor de leitura da RPI — versão para navegador (Pyodide).
+
+Mesma lógica de leitura e cruzamento do monitor_rpi.py original.
+A única mudança é a camada de entrada/saída: em vez de ler/escrever
+arquivos em disco, tudo roda em memória (bytes), porque este código
+executa dentro do navegador do usuário via Pyodide/WebAssembly — a
+carteira do usuário nunca é enviada a um servidor.
+
+As requisições HTTP (requests) para revistas.inpi.gov.br são dados
+PÚBLICOS da RPI, não a carteira privada do usuário. Se o navegador
+bloquear essas chamadas por CORS, configure PROXY_BASE (ver
+configurar_proxy) para um proxy público que só repassa esses arquivos
+públicos — o proxy nunca recebe a carteira do usuário.
+"""
+
+import re
+import io
+import zipfile
+import xml.etree.ElementTree as ET
+from datetime import datetime, timedelta
+
+import requests
+import pandas as pd
+
+
+# ---------------------------------------------------------------------------
+# CONFIGURAÇÃO
+# ---------------------------------------------------------------------------
+
+SECOES = {
+    "Marcas": 5,
+    "Patentes": 6,
+    "Desenhos Industriais": 3,
+}
+
+BASE_INDICE = "https://revistas.inpi.gov.br/rpi/busca/data"
+BASE_TXT = "https://revistas.inpi.gov.br/txt/"
+BASE_PDF = "https://revistas.inpi.gov.br/pdf/"
+
+HEADERS_HTTP = {
+    "User-Agent": "Mozilla/5.0"
+}
+
+MIN_DIGITOS_PROCESSO = 7
+
+# Prefixo de proxy opcional, só para os arquivos PÚBLICOS da RPI
+# (nunca para a carteira do usuário). Configurado via configurar_proxy().
+PROXY_BASE = ""
+
+
+def configurar_proxy(url_base):
+    """Define um proxy para as chamadas à RPI (dados públicos),
+    usado quando o navegador bloqueia a chamada direta por CORS."""
+
+    global PROXY_BASE
+    PROXY_BASE = url_base or ""
+
+
+def _url_publica(url):
+    if PROXY_BASE:
+        return PROXY_BASE.rstrip("/") + "/" + url
+    return url
+
+
+# ---------------------------------------------------------------------------
+# FUNÇÕES AUXILIARES (idênticas ao original)
+# ---------------------------------------------------------------------------
+
+def apenas_digitos(valor):
+    """Remove tudo que não for número."""
+    return re.sub(r"\D", "", str(valor))
+
+
+def texto_limpo(valor):
+    """Converte valores vazios/NaN em texto vazio."""
+    if pd.isna(valor):
+        return ""
+    return str(valor).strip()
+
+
+# ---------------------------------------------------------------------------
+# 1) BUSCAR EDIÇÕES
+# ---------------------------------------------------------------------------
+
+def buscar_edicoes(tipo_id, dias_atras=21):
+
+    hoje = datetime.now()
+
+    inicio = (hoje - timedelta(days=dias_atras)).strftime("%d/%m/%Y")
+    fim = hoje.strftime("%d/%m/%Y")
+
+    params = {
+        "revista.dataInicial": inicio,
+        "revista.dataFinal": fim,
+        "revista.tipoRevista.id": tipo_id,
+    }
+
+    resp = requests.get(
+        _url_publica(BASE_INDICE),
+        params=params,
+        headers=HEADERS_HTTP,
+        timeout=60
+    )
+
+    resp.raise_for_status()
+
+    return resp.json()
+
+
+def edicao_mais_recente(tipo_id):
+
+    edicoes = buscar_edicoes(tipo_id)
+
+    if not edicoes:
+        return None
+
+    return edicoes[0]
+
+
+def numero_rpi_mais_recente():
+    """Retorna o número da RPI mais recente disponível."""
+    edicao = edicao_mais_recente(SECOES["Marcas"])
+    if not edicao or edicao.get("numero") is None:
+        raise RuntimeError("Não foi possível identificar a RPI mais recente.")
+    return int(edicao["numero"])
+
+
+# ---------------------------------------------------------------------------
+# 2) BAIXAR ARQUIVOS (em memória, não em disco)
+# ---------------------------------------------------------------------------
+
+def baixar_bytes(url):
+
+    resp = requests.get(
+        _url_publica(url),
+        headers=HEADERS_HTTP,
+        timeout=300
+    )
+
+    resp.raise_for_status()
+
+    return resp.content
+
+
+def extrair_zip_em_memoria(conteudo_zip, extensao_procurada):
+
+    z = zipfile.ZipFile(io.BytesIO(conteudo_zip))
+
+    for nome in z.namelist():
+
+        if nome.lower().endswith(extensao_procurada.lower()):
+            return z.read(nome)
+
+    raise RuntimeError(
+        f"O ZIP não continha nenhum arquivo {extensao_procurada}."
+    )
+
+
+def obter_arquivo_da_edicao(edicao, nome_secao):
+
+    # -------------------------------------------------------
+    # MARCAS
+    # -------------------------------------------------------
+
+    if nome_secao == "Marcas":
+
+        nome_arquivo = edicao.get("nomeArquivoEscritorio")
+
+        if not nome_arquivo:
+            raise RuntimeError("Não encontrei o nome do arquivo de Marcas.")
+
+        conteudo_zip = baixar_bytes(BASE_TXT + nome_arquivo)
+        conteudo_xml = extrair_zip_em_memoria(conteudo_zip, ".xml")
+
+        return "XML", conteudo_xml
+
+    # -------------------------------------------------------
+    # PATENTES
+    # -------------------------------------------------------
+
+    if nome_secao == "Patentes":
+
+        nome_arquivo = edicao.get("nomeArquivoEscritorio")
+
+        if not nome_arquivo:
+            raise RuntimeError("Não encontrei o arquivo de Patentes.")
+
+        conteudo_zip = baixar_bytes(BASE_TXT + nome_arquivo)
+        conteudo_txt = extrair_zip_em_memoria(conteudo_zip, ".txt")
+
+        return "TXT", conteudo_txt
+
+    # -------------------------------------------------------
+    # DESENHOS INDUSTRIAIS
+    # -------------------------------------------------------
+
+    nome_pdf = edicao.get("nomeArquivo")
+
+    if not nome_pdf:
+        raise RuntimeError(f"Não encontrei o arquivo para {nome_secao}.")
+
+    conteudo_pdf = baixar_bytes(BASE_PDF + nome_pdf)
+
+    return "PDF", conteudo_pdf
+
+
+# ---------------------------------------------------------------------------
+# 3) CARREGAR CARTEIRA (a partir dos bytes escolhidos pelo usuário)
+# ---------------------------------------------------------------------------
+
+def _normalizar_cabecalho(texto):
+    """Deixa o nome da coluna 'neutro' pra comparação: minúsculo, sem
+    acento, sem espaço nas pontas."""
+
+    texto = str(texto).strip().lower()
+
+    substituicoes = {
+        "á": "a", "à": "a", "ã": "a", "â": "a",
+        "é": "e", "ê": "e",
+        "í": "i",
+        "ó": "o", "õ": "o", "ô": "o",
+        "ú": "u",
+        "ç": "c",
+    }
+
+    for original, troca in substituicoes.items():
+        texto = texto.replace(original, troca)
+
+    return texto
+
+
+# Nomes "bonitos" aceitos na planilha (sem underscore), mapeados pros
+# nomes internos que o resto do código usa. O usuário pode escrever
+# qualquer um dos nomes à esquerda como cabeçalho da coluna.
+SINONIMOS_COLUNAS = {
+    "numero do processo": "numero_processo",
+    "número do processo": "numero_processo",
+    "numero processo": "numero_processo",
+    "processo": "numero_processo",
+    "numero_processo": "numero_processo",
+
+    "tipo": "tipo",
+
+    "nome": "nome",
+    "marca": "nome",
+
+    "titular ou referencia": "titular_ou_referencia",
+    "titular/referencia": "titular_ou_referencia",
+    "titular": "titular_ou_referencia",
+    "referencia": "titular_ou_referencia",
+    "titular_ou_referencia": "titular_ou_referencia",
+
+    "observacoes": "observacoes",
+    "observação": "observacoes",
+    "obs": "observacoes",
+}
+
+
+def carregar_carteira(bytes_arquivo):
+
+    df = pd.read_excel(io.BytesIO(bytes_arquivo), sheet_name="Carteira")
+
+    # Aceita cabeçalhos "bonitos" (com espaço, acento, sem underscore) —
+    # traduz pro nome interno usado no resto do código.
+    novas_colunas = []
+
+    for coluna in df.columns:
+
+        chave = _normalizar_cabecalho(coluna)
+        novas_colunas.append(SINONIMOS_COLUNAS.get(chave, coluna))
+
+    df.columns = novas_colunas
+
+    colunas_obrigatorias = [
+        "numero_processo",
+        "tipo",
+        "nome",
+        "titular_ou_referencia",
+        "observacoes"
+    ]
+
+    for coluna in colunas_obrigatorias:
+
+        if coluna not in df.columns:
+
+            raise ValueError(
+                f"Está faltando a coluna '{coluna}' na planilha."
+            )
+
+    df["digitos"] = df["numero_processo"].apply(apenas_digitos)
+
+    df = df[df["digitos"].str.len() >= MIN_DIGITOS_PROCESSO].copy()
+
+    return df
+
+
+# ---------------------------------------------------------------------------
+# 4) LER XML DE MARCAS (idêntico ao original)
+# ---------------------------------------------------------------------------
+
+def extrair_processos_xml(conteudo_xml):
+
+    linhas = []
+
+    for _, elem in ET.iterparse(io.BytesIO(conteudo_xml), events=("end",)):
+
+        tag = elem.tag.split("}")[-1].lower()
+
+        if tag == "processo" and elem.get("numero"):
+
+            numero = elem.get("numero")
+
+            despachos = [
+                e for e in elem.iter()
+                if e.tag.split("}")[-1].lower() == "despacho"
+            ]
+
+            titulares = []
+
+            for e in elem.iter():
+
+                if e.tag.split("}")[-1].lower() == "titular":
+
+                    nome_titular = e.get("nome-razao-social", "").strip()
+
+                    if nome_titular:
+                        titulares.append(nome_titular)
+
+            titular_texto = "; ".join(titulares)
+
+            nome_marca = ""
+
+            for e in elem.iter():
+
+                if e.tag.split("}")[-1].lower() == "marca":
+
+                    for filho in e.iter():
+
+                        if filho.tag.split("}")[-1].lower() == "nome":
+
+                            nome_marca = (filho.text or "").strip()
+                            break
+
+                    if nome_marca:
+                        break
+
+            classes_nice = []
+
+            for e in elem.iter():
+
+                if e.tag.split("}")[-1].lower() == "classe-nice":
+
+                    codigo_classe = (e.get("codigo", "")).strip()
+
+                    status_classe = ""
+
+                    for filho in e.iter():
+
+                        if filho.tag.split("}")[-1].lower() == "status":
+                            status_classe = (filho.text or "").strip()
+
+                    classes_nice.append({
+                        "classe": codigo_classe,
+                        "status": status_classe
+                    })
+
+            if not classes_nice:
+                classes_nice = [{"classe": "", "status": ""}]
+
+            if not despachos:
+                despachos = [None]
+
+            for despacho in despachos:
+
+                if despacho is None:
+                    codigo_despacho = ""
+                    nome_despacho = ""
+                else:
+                    codigo_despacho = despacho.get("codigo", "")
+                    nome_despacho = (
+                        despacho.get("nome", despacho.text or "")
+                    ).strip()
+
+                for classe_info in classes_nice:
+
+                    linhas.append({
+                        "numero_processo": numero,
+                        "nome_rpi": nome_marca,
+                        "titular_rpi": titular_texto,
+                        "codigo_despacho": codigo_despacho,
+                        "despacho": nome_despacho,
+                        "classe_nice": classe_info["classe"],
+                        "status": classe_info["status"],
+                        "contexto": ""
+                    })
+
+            elem.clear()
+
+    return linhas
+
+
+# ---------------------------------------------------------------------------
+# 5) VARREDURA DE TXT (idêntico ao original)
+# ---------------------------------------------------------------------------
+
+def varrer_texto_por_linha(linhas_de_texto, digitos_carteira):
+
+    achados = []
+
+    for numero_linha, linha in enumerate(linhas_de_texto, start=1):
+
+        # Números de patente costumam vir formatados com espaços e
+        # traço (ex: "BR 10 2020 000000-0"), então cada pedaço isolado
+        # tem menos dígitos que o mínimo — por isso limpamos a linha
+        # inteira e procuramos o número da carteira ali dentro, em vez
+        # de exigir um bloco de dígitos já "pronto" e contínuo.
+        digitos_da_linha = apenas_digitos(linha)
+
+        if not digitos_da_linha:
+            continue
+
+        for numero_carteira in digitos_carteira:
+
+            if not numero_carteira:
+                continue
+
+            if numero_carteira in digitos_da_linha:
+
+                achados.append({
+                    "numero_processo": numero_carteira,
+                    "nome_rpi": "",
+                    "titular_rpi": "",
+                    "codigo_despacho": "",
+                    "despacho": "",
+                    "classe_nice": "",
+                    "status": "",
+                    "contexto": f"linha {numero_linha}: {linha.strip()[:300]}"
+                })
+
+    return achados
+
+
+def extrair_processos_txt(conteudo_txt, digitos_carteira):
+
+    texto = conteudo_txt.decode("latin-1", errors="ignore")
+    linhas = texto.splitlines()
+
+    return varrer_texto_por_linha(linhas, digitos_carteira)
+
+
+# ---------------------------------------------------------------------------
+# 6) LER PDF (idêntico ao original, via pypdf)
+# ---------------------------------------------------------------------------
+
+def extrair_processos_pdf(conteudo_pdf, digitos_carteira):
+
+    from pypdf import PdfReader
+
+    leitor = PdfReader(io.BytesIO(conteudo_pdf))
+
+    achados = []
+
+    for numero_pagina, pagina in enumerate(leitor.pages, start=1):
+
+        texto = pagina.extract_text() or ""
+        linhas = texto.split("\n")
+
+        achados_pagina = varrer_texto_por_linha(linhas, digitos_carteira)
+
+        for achado in achados_pagina:
+            achado["contexto"] = f"página {numero_pagina} | {achado['contexto']}"
+
+        achados.extend(achados_pagina)
+
+    return achados
+
+
+# ---------------------------------------------------------------------------
+# 7) CRUZAR RESULTADOS COM A CARTEIRA (idêntico ao original)
+# ---------------------------------------------------------------------------
+
+def cruzar_com_carteira(linhas_rpi, carteira_df):
+
+    achados_finais = []
+
+    carteira_por_numero = {}
+
+    for _, item in carteira_df.iterrows():
+
+        numero = item["digitos"]
+        carteira_por_numero.setdefault(numero, []).append(item)
+
+    for linha in linhas_rpi:
+
+        digitos = apenas_digitos(linha["numero_processo"])
+
+        if digitos not in carteira_por_numero:
+            continue
+
+        for item_carteira in carteira_por_numero[digitos]:
+
+            nome_rpi = texto_limpo(linha.get("nome_rpi", ""))
+            nome_carteira = texto_limpo(item_carteira.get("nome", ""))
+            nome_final = nome_rpi if nome_rpi else nome_carteira
+
+            titular_rpi = texto_limpo(linha.get("titular_rpi", ""))
+            titular_carteira = texto_limpo(
+                item_carteira.get("titular_ou_referencia", "")
+            )
+            titular_final = titular_rpi if titular_rpi else titular_carteira
+
+            achados_finais.append({
+                "Processo": linha["numero_processo"],
+                "Tipo": texto_limpo(item_carteira["tipo"]),
+                "Nome": nome_final,
+                "Titular": titular_final,
+                "Código do despacho": texto_limpo(linha.get("codigo_despacho", "")),
+                "Despacho": texto_limpo(linha.get("despacho", "")),
+                "Classe Nice": texto_limpo(linha.get("classe_nice", "")),
+                "Status": texto_limpo(linha.get("status", "")),
+                "Referência da carteira": texto_limpo(
+                    item_carteira.get("titular_ou_referencia", "")
+                ),
+                "Observações": texto_limpo(item_carteira.get("observacoes", "")),
+                "Contexto": texto_limpo(linha.get("contexto", "")),
+            })
+
+    return achados_finais
+
+
+# ---------------------------------------------------------------------------
+# 8) GERAR RELATÓRIO (em memória — retorna os bytes do .xlsx)
+# ---------------------------------------------------------------------------
+
+def gerar_relatorio_bytes(resultados_por_secao):
+
+    from openpyxl.styles import Font, Alignment
+
+    buffer = io.BytesIO()
+    total_hits = 0
+
+    with pd.ExcelWriter(buffer, engine="openpyxl") as writer:
+
+        for secao, linhas in resultados_por_secao.items():
+
+            df = pd.DataFrame(linhas)
+
+            colunas = [
+                "Processo", "Tipo", "Nome", "Titular", "Código do despacho",
+                "Despacho", "Classe Nice", "Status", "Referência da carteira",
+                "Observações", "Contexto"
+            ]
+
+            if df.empty:
+                df = pd.DataFrame(columns=colunas)
+            else:
+                for coluna in colunas:
+                    if coluna not in df.columns:
+                        df[coluna] = ""
+                df = df[colunas]
+
+            df.to_excel(writer, sheet_name=secao[:31], index=False)
+
+            total_hits += len(df)
+
+            worksheet = writer.sheets[secao[:31]]
+
+            worksheet.freeze_panes = "A2"
+            worksheet.auto_filter.ref = worksheet.dimensions
+
+            larguras = {
+                "A": 15, "B": 20, "C": 30, "D": 40, "E": 22, "F": 45,
+                "G": 14, "H": 15, "I": 30, "J": 35, "K": 60
+            }
+
+            for coluna, largura in larguras.items():
+                worksheet.column_dimensions[coluna].width = largura
+
+            for cell in worksheet[1]:
+                cell.font = Font(bold=True)
+                cell.alignment = Alignment(
+                    horizontal="center", vertical="center", wrap_text=True
+                )
+
+            for row in worksheet.iter_rows(min_row=2):
+                for cell in row:
+                    cell.alignment = Alignment(vertical="top", wrap_text=True)
+
+    buffer.seek(0)
+
+    return buffer.getvalue(), total_hits
+
+
+# ---------------------------------------------------------------------------
+# 9) ORQUESTRAÇÃO — chamada a partir do JavaScript
+# ---------------------------------------------------------------------------
+
+def processar_carteira(bytes_carteira, numero_rpi=None, callback_progresso=None):
+    """
+    Função principal chamada pelo JavaScript da página.
+
+    bytes_carteira: conteúdo do .xlsx escolhido pelo usuário (bytes) —
+        nunca sai do navegador; só passa por esta função, em memória.
+    callback_progresso: função opcional chamada com mensagens de status,
+        pra atualizar a interface (ex: uma função JS repassada via Pyodide).
+
+    Retorna os bytes do relatório .xlsx pronto pra download.
+    """
+
+    def log(mensagem):
+        if callback_progresso:
+            callback_progresso(mensagem)
+
+    log("Carregando carteira...")
+
+    carteira_df = carregar_carteira(bytes_carteira)
+    digitos_carteira = set(carteira_df["digitos"])
+
+    log(f"{len(carteira_df)} itens válidos na carteira.")
+
+    resultados_por_secao = {}
+
+    for nome_secao, tipo_id in SECOES.items():
+
+        if numero_rpi is None:
+            log(f"[{nome_secao}] Consultando a edição mais recente disponível...")
+
+            try:
+                edicao = edicao_mais_recente(tipo_id)
+            except Exception as erro:
+                log(f"  ERRO ao consultar {nome_secao}: {erro}")
+                continue
+
+            if edicao is None:
+                log("  Nenhuma edição encontrada.")
+                continue
+        else:
+            log(f"[{nome_secao}] Consultando RPI {numero_rpi}...")
+
+            try:
+                edicoes = buscar_edicoes(tipo_id, dias_atras=3650)
+                edicao = next(
+                    (item for item in edicoes if str(item.get("numero")) == str(numero_rpi)),
+                    None
+                )
+            except Exception as erro:
+                log(f"  ERRO ao consultar RPI {numero_rpi}: {erro}")
+                continue
+
+            if edicao is None:
+                log(f"  RPI {numero_rpi} não encontrada para esta seção.")
+                continue
+
+        log(f"  Edição selecionada: RPI {edicao['numero']} ({edicao['dataPublicacao']})")
+
+        try:
+            tipo_obtido, conteudo = obter_arquivo_da_edicao(edicao, nome_secao)
+        except Exception as erro:
+            log(f"  ERRO ao baixar {nome_secao}: {erro}")
+            continue
+
+        log("  Lendo e cruzando com a carteira...")
+
+        try:
+
+            if tipo_obtido == "XML":
+                linhas_rpi = extrair_processos_xml(conteudo)
+            elif tipo_obtido == "TXT":
+                linhas_rpi = extrair_processos_txt(conteudo, digitos_carteira)
+            else:
+                linhas_rpi = extrair_processos_pdf(conteudo, digitos_carteira)
+
+            achados = cruzar_com_carteira(linhas_rpi, carteira_df)
+
+        except Exception as erro:
+            log(f"  ERRO ao processar {nome_secao}: {erro}")
+            continue
+
+        log(f"  {len(achados)} ocorrência(s) encontrada(s).")
+
+        resultados_por_secao[nome_secao] = achados
+
+    if not resultados_por_secao:
+        raise RuntimeError("Nenhuma seção pôde ser processada.")
+
+    log("Gerando planilha de resultado...")
+
+    conteudo_xlsx, total_hits = gerar_relatorio_bytes(resultados_por_secao)
+
+    log(f"Concluído. {total_hits} ocorrência(s) encontrada(s) no total.")
+
+    return conteudo_xlsx
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+<script>
+// -----------------------------------------------------------------------
+// Configuração
+// -----------------------------------------------------------------------
+
+// Só usado se aparecer erro de CORS ao consultar revistas.inpi.gov.br.
+// Nesse caso, publique proxy-worker.js (Cloudflare Workers, gratuito) e
+// cole a URL gerada aqui. Até lá, deixe em branco.
+const PROXY_BASE = "https://broad-poetry-8a1c.2k2wip.workers.dev";
+
+// -----------------------------------------------------------------------
+// Elementos da página
+// -----------------------------------------------------------------------
+
+const elArquivo = document.getElementById("arquivo-carteira");
+const elBotaoProcessar = document.getElementById("botao-processar");
+const elEdicaoAnterior = document.getElementById("edicao-anterior");
+const elNumeroRpi = document.getElementById("numero-rpi");
+const elRpiSubir = document.getElementById("rpi-subir");
+const elRpiDescer = document.getElementById("rpi-descer");
+const elEdicaoNota = document.getElementById("edicao-nota");
+const elStatus = document.getElementById("status");
+
+let ultimaRpi = null;
+const elMensagemFinal = document.getElementById("mensagem-final");
+const elBotaoDownload = document.getElementById("botao-download");
+
+let pyodideReady = null;
+let bytesResultado = null;
+
+function logStatus(msg) {
+    elStatus.style.display = "block";
+    elStatus.textContent += msg + "\n";
+    elStatus.scrollTop = elStatus.scrollHeight;
+}
+
+function mostrarMensagemFinal(texto, classe) {
+    elMensagemFinal.textContent = texto;
+    elMensagemFinal.className = classe;
+    elMensagemFinal.style.display = "block";
+}
+
+async function prepararContadorRpi() {
+    try {
+        const pyodide = await pyodideReady;
+        const resultado = await pyodide.runPythonAsync(`
+            import motor_rpi_web
+            motor_rpi_web.numero_rpi_mais_recente()
+        `);
+
+        ultimaRpi = Number(resultado);
+        const primeiraAnterior = ultimaRpi - 1;
+
+        if (primeiraAnterior >= 1) {
+            elNumeroRpi.value = primeiraAnterior;
+            elNumeroRpi.min = 1;
+            elNumeroRpi.max = ultimaRpi;
+            atualizarSetas();
+            elEdicaoNota.textContent = `RPI mais recente disponível: ${ultimaRpi}. Use as setas ou digite o número da RPI que deseja consultar.`;
+        } else {
+            elNumeroRpi.value = ultimaRpi;
+            elNumeroRpi.min = 1;
+            elNumeroRpi.max = ultimaRpi;
+            atualizarSetas();
+        }
+    } catch (erro) {
+        console.error(erro);
+        elNumeroRpi.value = "Não disponível";
+        elRpiSubir.disabled = true;
+        elRpiDescer.disabled = true;
+        elEdicaoNota.textContent = "Não foi possível carregar o número da RPI mais recente. Recarregue a página e tente novamente.";
+    }
+}
+
+function atualizarSetas() {
+    const valor = Number(elNumeroRpi.value);
+    elRpiSubir.disabled = !ultimaRpi || !Number.isFinite(valor) || valor >= ultimaRpi;
+    elRpiDescer.disabled = !Number.isFinite(valor) || valor <= 1;
+}
+
+elNumeroRpi.addEventListener("input", () => {
+    atualizarSetas();
+});
+
+elNumeroRpi.addEventListener("blur", () => {
+    if (!ultimaRpi) return;
+
+    let valor = Number(elNumeroRpi.value);
+
+    if (!Number.isFinite(valor)) {
+        elNumeroRpi.value = ultimaRpi - 1;
+    } else {
+        valor = Math.floor(valor);
+        valor = Math.max(1, Math.min(valor, ultimaRpi));
+        elNumeroRpi.value = valor;
+    }
+
+    atualizarSetas();
+});
+
+elRpiSubir.addEventListener("click", () => {
+    const valor = Number(elNumeroRpi.value);
+    if (ultimaRpi && valor < ultimaRpi) {
+        elNumeroRpi.value = valor + 1;
+        atualizarSetas();
+    }
+});
+
+elRpiDescer.addEventListener("click", () => {
+    const valor = Number(elNumeroRpi.value);
+    if (valor > 1) {
+        elNumeroRpi.value = valor - 1;
+        atualizarSetas();
+    }
+});
+
+document.querySelectorAll('input[name="tipo-edicao"]').forEach((radio) => {
+    radio.addEventListener("change", async () => {
+        const anterior = document.querySelector('input[name="tipo-edicao"]:checked').value === "anterior";
+        elEdicaoAnterior.style.display = anterior ? "block" : "none";
+
+        if (anterior && ultimaRpi === null) {
+            elNumeroRpi.value = "Carregando...";
+            elRpiSubir.disabled = true;
+            elRpiDescer.disabled = true;
+            await prepararContadorRpi();
+        }
+    });
+});
+
+// -----------------------------------------------------------------------
+// Inicialização do Pyodide (roda uma vez, ao carregar a página)
+// -----------------------------------------------------------------------
+
+async function iniciarPyodide() {
+
+    logStatus("Preparando o ambiente Python no navegador (só na primeira vez)...");
+
+    logStatus("[1/5] Carregando o Pyodide...");
+    const pyodide = await loadPyodide();
+
+    logStatus("[2/5] Carregando pandas e requests...");
+    await pyodide.loadPackage(["pandas", "requests", "micropip"]);
+
+    logStatus("[3/5] Instalando openpyxl, pyodide-http e pypdf...");
+    await pyodide.runPythonAsync(`
+        import micropip
+        await micropip.install("openpyxl")
+        await micropip.install("pyodide-http")
+        await micropip.install("pypdf")
+
+        import pyodide_http
+        pyodide_http.patch_all()
+    `);
+
+    logStatus("[4/5] Carregando o motor da RPI...");
+    const codigoModulo = document.getElementById("motor-rpi-fonte").textContent;
+    pyodide.FS.writeFile("motor_rpi_web.py", codigoModulo);
+
+    logStatus("[5/5] Inicializando...");
+    await pyodide.runPythonAsync(`
+        import motor_rpi_web
+        motor_rpi_web.configurar_proxy(${JSON.stringify(PROXY_BASE)})
+    `);
+
+    logStatus("Ambiente pronto.");
+
+    return pyodide;
+}
+
+pyodideReady = iniciarPyodide().then((pyodide) => {
+    elBotaoProcessar.disabled = false;
+    elBotaoProcessar.textContent = "PROCESSAR RPI";
+    return pyodide;
+}).catch((erro) => {
+    console.error(erro);
+    const detalhe = (erro && erro.message) ? erro.message : String(erro);
+    logStatus("ERRO: " + detalhe);
+    mostrarMensagemFinal("Não foi possível preparar o ambiente (veja o detalhe acima). Recarregue a página.", "erro");
+});
+
+// -----------------------------------------------------------------------
+// Processamento
+// -----------------------------------------------------------------------
+
+elBotaoProcessar.addEventListener("click", async () => {
+
+    const arquivo = elArquivo.files[0];
+
+    if (!arquivo) {
+        mostrarMensagemFinal("Selecione a planilha da carteira antes de continuar.", "erro");
+        return;
+    }
+
+    const tipoEdicao = document.querySelector('input[name="tipo-edicao"]:checked').value;
+    let numeroRpi = null;
+
+    if (tipoEdicao === "anterior") {
+        const valorRpi = elNumeroRpi.value.trim();
+
+        if (!valorRpi || !/^\d+$/.test(valorRpi) || Number(valorRpi) < 1) {
+            mostrarMensagemFinal("Informe um número válido de RPI.", "erro");
+            return;
+        }
+
+        numeroRpi = Number(valorRpi);
+    }
+
+    elBotaoProcessar.disabled = true;
+    elBotaoProcessar.textContent = "Processando...";
+    elBotaoDownload.style.display = "none";
+    elMensagemFinal.style.display = "none";
+    elStatus.textContent = "";
+
+    try {
+        const pyodide = await pyodideReady;
+
+        const bufferArquivo = await arquivo.arrayBuffer();
+        const bytesCarteira = new Uint8Array(bufferArquivo);
+
+        pyodide.globals.set("bytes_carteira_js", bytesCarteira);
+        pyodide.globals.set("numero_rpi_js", numeroRpi);
+        pyodide.globals.set("callback_progresso_js", (msg) => logStatus(msg));
+
+        const resultado = await pyodide.runPythonAsync(`
+            import motor_rpi_web
+
+            conteudo_xlsx = motor_rpi_web.processar_carteira(
+                bytes(bytes_carteira_js.to_py()),
+                numero_rpi=numero_rpi_js,
+                callback_progresso=callback_progresso_js
+            )
+
+            conteudo_xlsx
+        `);
+
+        bytesResultado = resultado.toJs();
+
+        mostrarMensagemFinal("Processamento concluído com sucesso.", "sucesso");
+        elBotaoDownload.style.display = "block";
+
+    } catch (erro) {
+        console.error(erro);
+        mostrarMensagemFinal("Ocorreu um erro durante o processamento: " + erro.message, "erro");
+    } finally {
+        elBotaoProcessar.disabled = false;
+        elBotaoProcessar.textContent = "PROCESSAR RPI";
+    }
+});
+
+// -----------------------------------------------------------------------
+// Download do resultado (gerado e mantido só no navegador)
+// -----------------------------------------------------------------------
+
+elBotaoDownload.addEventListener("click", () => {
+
+    if (!bytesResultado) return;
+
+    const blob = new Blob([bytesResultado], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    });
+
+    const url = URL.createObjectURL(blob);
+    const hoje = new Date().toISOString().slice(0, 10);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `resultado_rpi_${hoje}.xlsx`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
+});
+</script>
+
+</body>
+</html>
